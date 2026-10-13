@@ -11,7 +11,15 @@ It bundles Matt Pocock's [AI Hero skills](https://github.com/mattpocock/skills) 
 
 ## Quick start
 
-Needs `git` and the [GitHub CLI](https://cli.github.com) (run `gh auth login` once).
+**Let your agent do it.** Paste this into agent chat (Copilot agent mode, Cursor, Codex or Claude Code):
+
+```text
+Set up heroloop on this machine by following https://raw.githubusercontent.com/musickevan1/heroloop/main/SETUP.md
+```
+
+It checks prerequisites, clones the repo, installs the skills and the always-on guidance for your tool, and asks before installing anything or touching files it didn't create. The steps are in [SETUP.md](SETUP.md).
+
+**Or by hand.** Needs `git` and the [GitHub CLI](https://cli.github.com) (run `gh auth login` once).
 
 **Windows** (PowerShell):
 
@@ -148,6 +156,18 @@ Type `/` in agent chat to see the skills. Only add `~/.claude/skills` if you use
 
 **Share with a team** by copying the skills into a repo instead: `install.ps1 -Copy .github\skills` or `install.sh --copy .github/skills`.
 
+### Already have AI Hero or Ponytail?
+
+heroloop never overwrites a skill it didn't install, so nothing breaks, but you can end up with two copies:
+
+| You already have | What happens | To use heroloop's copy |
+|---|---|---|
+| The skills in `~/.agents/skills` | The installer skips those names (`skip ...`); `dev-loop` uses your copies | Delete those folders, re-run the installer |
+| The skills in another folder your tool reads (`~/.claude/skills`, `~/.copilot/skills`, `~/.cursor/skills`) | Both copies load; the tool lists each skill twice | Delete the other copies |
+| The Claude Code plugins | Claude Code shows both `/ponytail` and `/ponytail:ponytail` | `claude plugin uninstall <plugin>` |
+
+[SETUP.md](SETUP.md) checks for all three and asks which copy you want to keep.
+
 ## Updating
 
 ```sh
@@ -162,6 +182,7 @@ Installs are links into this repo, so a pull is the whole update. Re-run the ins
 skills/            this repo's own skills: dev-loop (with its glossary), land-prs
 vendor/            upstream skills, copied unchanged (see vendor/README.md)
 AGENTS.global.md   always-on guidance for your tool's personal instructions
+SETUP.md           step-by-step install for an agent to follow
 install.ps1        install on Windows (directory junctions, no admin needed)
 install.sh         install on macOS / Linux / WSL (symlinks)
 sync.sh            maintainers: refresh vendor/ from upstream
