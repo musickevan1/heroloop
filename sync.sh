@@ -10,7 +10,9 @@ tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 git clone -q --depth 1 https://github.com/mattpocock/skills "$tmp/mattpocock"
 git clone -q --depth 1 https://github.com/DietrichGebert/ponytail "$tmp/ponytail"
 
-mkdir -p vendor LICENSES && rm -rf vendor/*/  # keeps vendor/README.md
+mkdir -p vendor LICENSES
+# Remove the old skills (not vendor/README.md). No trailing slash, so a symlink is removed, never followed.
+find vendor -mindepth 1 -maxdepth 1 ! -name README.md -exec rm -rf {} +
 # AI Hero: the stable set listed in its plugin manifest.
 python3 - "$tmp/mattpocock" <<'PY'
 import json, shutil, sys, pathlib
