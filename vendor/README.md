@@ -5,7 +5,7 @@ Skills copied from upstream by `../sync.sh`. Do not edit them here: changes are 
 | Skills | Source | License |
 |---|---|---|
 | everything except `ponytail*` | [mattpocock/skills](https://github.com/mattpocock/skills) (AI Hero, Matt Pocock) | [MIT](../LICENSES/mattpocock-skills.LICENSE) |
-| `ponytail*` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (Dietrich Gebert) | [MIT](../LICENSES/ponytail.LICENSE) |
+| `ponytail*` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (DietrichGebert) | [MIT](../LICENSES/ponytail.LICENSE) |
 
 Pinned commits: [../UPSTREAM.lock](../UPSTREAM.lock).
 

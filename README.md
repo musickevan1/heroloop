@@ -90,6 +90,6 @@ Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), revie
 Most of the skills here are not mine. They are copied unchanged from:
 
 - **AI Hero** by Matt Pocock: [mattpocock/skills](https://github.com/mattpocock/skills), MIT ([license](LICENSES/mattpocock-skills.LICENSE)). The grilling, spec, ticket, TDD, review and domain-modeling skills.
-- **Ponytail** by Dietrich Gebert: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT ([license](LICENSES/ponytail.LICENSE)). The `ponytail*` skills.
+- **Ponytail** by DietrichGebert: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT ([license](LICENSES/ponytail.LICENSE)). The `ponytail*` skills.
 
 The exact upstream commits are in [UPSTREAM.lock](UPSTREAM.lock). The skill format is the open [Agent Skills](https://agentskills.io) standard. This repo's own files (`skills/`, scripts, docs) are MIT, see [LICENSE](LICENSE).
