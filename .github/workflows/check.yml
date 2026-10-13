@@ -1,0 +1,115 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skill names match their folders
+        run: |
+          fail=0
+          for f in skills/*/SKILL.md vendor/*/SKILL.md; do
+            dir=$(basename "$(dirname "$f")")
+            name=$(sed -n 's/^name: *//p' "$f" | head -1 | tr -d '"')
+            [ "$dir" = "$name" ] || { echo "::error file=$f::name '$name' does not match folder '$dir'"; fail=1; }
+          done
+          exit $fail
+      - name: Every /skill reference is a skill this repo ships
+        run: |
+          fail=0
+          for s in $(grep -ohE '`/[a-z][a-z0-9-]+' skills/*/*.md README.md SETUP.md | tr -d '`/' | sort -u); do
+            [ -d "skills/$s" ] || [ -d "vendor/$s" ] || { echo "::error::/$s is referenced but not shipped"; fail=1; }
+          done
+          exit $fail
+      - name: shellcheck
+        run: shellcheck install.sh sync.sh
+      - name: install.ps1 parses
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/install.ps1", [ref]$null, [ref]$errors) | Out-Null
+          if ($errors) { $errors; exit 1 }
+
+  install-unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Default folder
+        run: |
+          set -eux
+          ./install.sh
+          test -f "$HOME/.agents/skills/dev-loop/SKILL.md"
+      - name: Link, re-run, leave others alone, uninstall
+        run: |
+          set -eux
+          dest="$RUNNER_TEMP/skills"
+          mkdir -p "$dest/tdd" && echo keep > "$dest/tdd/SKILL.md"  # a skill heroloop did not install
+          ./install.sh "$dest"
+          ./install.sh "$dest"
+          test -L "$dest/dev-loop" && test -f "$dest/dev-loop/SKILL.md"
+          grep -qx keep "$dest/tdd/SKILL.md"
+          ./install.sh --uninstall "$dest"
+          test ! -e "$dest/dev-loop"
+          grep -qx keep "$dest/tdd/SKILL.md"
+          test -f skills/dev-loop/SKILL.md
+      - name: Copy, re-run, uninstall
+        run: |
+          set -eux
+          dest="$RUNNER_TEMP/copied"
+          ./install.sh --copy "$dest"
+          ./install.sh --copy "$dest"
+          test ! -L "$dest/dev-loop" && test -f "$dest/dev-loop/.heroloop"
+          ./install.sh --uninstall "$dest"
+          test -z "$(ls -A "$dest")"
+
+  install-windows:
+    strategy:
+      matrix:
+        shell: [pwsh, powershell]  # PowerShell 7 and the built-in Windows PowerShell 5.1
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Default folder
+        run: |
+          $ErrorActionPreference = 'Stop'
+          .\install.ps1
+          if (-not (Test-Path "$HOME\.agents\skills\dev-loop\SKILL.md")) { throw 'not installed into ~\.agents\skills' }
+      - name: Junctions, re-run, leave others alone, uninstall
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dest = Join-Path $env:RUNNER_TEMP 'skills'
+          New-Item -ItemType Directory -Force (Join-Path $dest 'tdd') | Out-Null
+          Set-Content (Join-Path $dest 'tdd\SKILL.md') 'keep'
+          .\install.ps1 $dest
+          .\install.ps1 $dest
+          $link = Get-Item (Join-Path $dest 'dev-loop') -Force
+          if ($link.LinkType -ne 'Junction') { throw "dev-loop is '$($link.LinkType)', not a junction" }
+          if (-not (Test-Path (Join-Path $dest 'dev-loop\SKILL.md'))) { throw 'dev-loop\SKILL.md is not readable' }
+          if ((Get-Content (Join-Path $dest 'tdd\SKILL.md')) -ne 'keep') { throw 'a skill heroloop did not install was changed' }
+          .\install.ps1 -Uninstall $dest
+          if (Test-Path (Join-Path $dest 'dev-loop')) { throw 'dev-loop is still installed' }
+          if (-not (Test-Path (Join-Path $dest 'tdd\SKILL.md'))) { throw 'uninstall removed a skill heroloop did not install' }
+          if (-not (Test-Path skills\dev-loop\SKILL.md)) { throw 'uninstall deleted the source files' }
+      - name: Copy, re-run, uninstall
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dest = Join-Path $env:RUNNER_TEMP 'copied'
+          .\install.ps1 -Copy $dest
+          .\install.ps1 -Copy $dest
+          if (-not (Test-Path (Join-Path $dest 'dev-loop\.heroloop'))) { throw 'copy marker missing' }
+          .\install.ps1 -Uninstall $dest
+          if (Get-ChildItem $dest) { throw 'uninstall left files behind' }

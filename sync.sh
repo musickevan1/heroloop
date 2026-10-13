@@ -30,4 +30,4 @@ find vendor -name 'SKILL.md.bak' -delete
 
 { echo "mattpocock/skills $(git -C "$tmp/mattpocock" rev-parse HEAD)"
   echo "DietrichGebert/ponytail $(git -C "$tmp/ponytail" rev-parse HEAD)"; } > UPSTREAM.lock
-echo "vendored $(ls vendor | wc -l | tr -d ' ') skills; review with: git diff"
+echo "vendored $(find vendor -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ') skills; review with: git diff"
