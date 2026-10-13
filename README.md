@@ -1,5 +1,7 @@
 # heroloop
 
+[![check](https://github.com/musickevan1/heroloop/actions/workflows/check.yml/badge.svg)](https://github.com/musickevan1/heroloop/actions/workflows/check.yml)
+
 A plain, tool-agnostic dev workflow for AI coding agents: take an idea from a design interview to merged pull requests, with you signing off at the two moments that matter.
 
 - **Works in any agent tool.** Every piece is a Markdown `SKILL.md` in the open [Agent Skills](https://agentskills.io) format: GitHub Copilot (VS Code), Cursor, Codex and Claude Code all read it.
@@ -7,7 +9,7 @@ A plain, tool-agnostic dev workflow for AI coding agents: take an idea from a de
 - **You stay in control.** The agent plans and builds; nothing is merged, force-pushed or closed until you sign off.
 - **Minimal code by default.** [Ponytail](https://github.com/DietrichGebert/ponytail) pushes every change toward the simplest thing that works.
 
-It bundles Matt Pocock's [AI Hero skills](https://github.com/mattpocock/skills) for planning, building and review, Ponytail for simplicity, and two skills of its own, `dev-loop` and `land-prs`, that tie them into a loop.
+It bundles Matt Pocock's [AI Hero skills](https://github.com/mattpocock/skills) for planning, building and review, Ponytail for simplicity, and two skills of its own, `dev-loop` and `land-prs`, that tie them into a loop. It is an independent bundle, not affiliated with or endorsed by either project ([credits](#credits)).
 
 ## Quick start
 
@@ -176,6 +178,14 @@ git -C ~/heroloop pull
 
 Installs are links into this repo, so a pull is the whole update. Re-run the install script only when skills were added or removed (it also cleans up links to deleted ones), or if you installed with `-Copy` / `--copy`.
 
+## Uninstall
+
+1. Remove the skills. This deletes only what heroloop installed; links are removed without touching what they point to, and skills you installed yourself stay.
+   - Windows: `& $HOME\heroloop\install.ps1 -Uninstall` (add any other folders you installed into, e.g. `$HOME\.claude\skills`)
+   - macOS / Linux: `~/heroloop/install.sh --uninstall` (same: add other folders)
+2. Remove the always-on guidance: the `heroloop:start` … `heroloop:end` block in `~/.codex/AGENTS.md` or `~/.claude/CLAUDE.md`, the `heroloop.instructions.md` file in VS Code (*Chat: Open Customizations*), or the text you pasted into Cursor's *User Rules*.
+3. Delete the clone: `~/heroloop`.
+
 ## Repo layout
 
 ```text
@@ -187,9 +197,10 @@ install.ps1        install on Windows (directory junctions, no admin needed)
 install.sh         install on macOS / Linux / WSL (symlinks)
 sync.sh            maintainers: refresh vendor/ from upstream
 UPSTREAM.lock      the upstream commits vendor/ was copied from
+.github/workflows/ CI: installs on Windows, macOS and Linux, and checks the skills
 ```
 
-Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), review `git diff`, and commit.
+Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), review `git diff`, and open a PR: CI runs both installers on Windows (PowerShell 7 and 5.1), macOS and Linux, and checks that every skill's `name` matches its folder and every slash-command reference names a skill this repo ships.
 
 ## Troubleshooting
 
@@ -208,3 +219,5 @@ Most of the skills here are not mine. They are copied unchanged from:
 - **Ponytail** by DietrichGebert: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT ([license](LICENSES/ponytail.LICENSE)). The `ponytail*` skills.
 
 The exact upstream commits are in [UPSTREAM.lock](UPSTREAM.lock). The skill format is the open [Agent Skills](https://agentskills.io) standard. This repo's own files (`skills/`, scripts, docs) are MIT, see [LICENSE](LICENSE).
+
+heroloop is an independent project. It is not affiliated with, endorsed by, or supported by Matt Pocock, AI Hero, or the Ponytail project; report problems with heroloop here, not upstream.
