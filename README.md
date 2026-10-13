@@ -28,7 +28,7 @@ install.sh   the same, for macOS / Linux / WSL
 sync.sh      maintainers: refresh vendor/ from upstream
 ```
 
-Vendored: [mattpocock/skills](https://github.com/mattpocock/skills) (AI Hero) and [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), both MIT; licenses in `LICENSES/`, pinned commits in `UPSTREAM.lock`. The one change: `disable-model-invocation` is removed so the agent can chain skills itself (e.g. `dev-loop` calling `/to-spec`).
+`vendor/` holds other people's work, credited below; see [vendor/README.md](vendor/README.md) for what was changed.
 
 ## Install
 
@@ -84,3 +84,12 @@ Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), revie
 
 - Claude Code's built-in `/code-review` takes precedence over the AI Hero skill of the same name there; other tools use the AI Hero one.
 - The ticket loop runs inside your chat session, one ticket at a time. If your tool can hand a ticket to a subagent, `dev-loop` says to, which keeps each ticket in a fresh context. Cloud agents that open PRs from issues (like Copilot's coding agent) fit too: `/land-prs` works the same on their PRs.
+
+## Credits
+
+Most of the skills here are not mine. They are copied unchanged from:
+
+- **AI Hero** by Matt Pocock: [mattpocock/skills](https://github.com/mattpocock/skills), MIT ([license](LICENSES/mattpocock-skills.LICENSE)). The grilling, spec, ticket, TDD, review and domain-modeling skills.
+- **Ponytail** by Dietrich Gebert: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT ([license](LICENSES/ponytail.LICENSE)). The `ponytail*` skills.
+
+The exact upstream commits are in [UPSTREAM.lock](UPSTREAM.lock). The skill format is the open [Agent Skills](https://agentskills.io) standard. This repo's own files (`skills/`, scripts, docs) are MIT, see [LICENSE](LICENSE).

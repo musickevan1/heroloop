@@ -10,7 +10,7 @@ tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 git clone -q --depth 1 https://github.com/mattpocock/skills "$tmp/mattpocock"
 git clone -q --depth 1 https://github.com/DietrichGebert/ponytail "$tmp/ponytail"
 
-rm -rf vendor && mkdir -p vendor LICENSES
+mkdir -p vendor LICENSES && rm -rf vendor/*/  # keeps vendor/README.md
 # AI Hero: the stable set listed in its plugin manifest.
 python3 - "$tmp/mattpocock" <<'PY'
 import json, shutil, sys, pathlib
