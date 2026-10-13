@@ -200,7 +200,7 @@ UPSTREAM.lock      the upstream commits vendor/ was copied from
 .github/workflows/ CI: installs on Windows, macOS and Linux, and checks the skills
 ```
 
-Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), review `git diff`, and open a PR: CI runs both installers on Windows (PowerShell 7 and 5.1), macOS and Linux, and checks that every skill's `name` matches its folder and every `/skill` reference is a skill this repo ships.
+Maintainers refresh upstream with `./sync.sh` (Git Bash works on Windows), review `git diff`, and open a PR: CI runs both installers on Windows (PowerShell 7 and 5.1), macOS and Linux, and checks that every skill's `name` matches its folder and every slash-command reference names a skill this repo ships.
 
 ## Troubleshooting
 
