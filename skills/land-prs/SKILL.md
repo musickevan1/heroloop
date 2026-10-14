@@ -14,7 +14,7 @@ Scope: the user's open PRs in the current repo. `/land-prs all` covers every rep
 
 Per repo (add `-R <owner/repo>` outside the current one):
 
-- `gh pr list --author @me --state open --json number,title,url,headRefName,baseRefName,isDraft,mergeable,reviewDecision,statusCheckRollup,updatedAt,files`
+- `gh pr list --author @me --state open --json number,title,url,headRefName,baseRefName,isDraft,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup,updatedAt,files`
 - `gh repo view --json defaultBranchRef,mergeCommitAllowed,squashMergeAllowed,rebaseMergeAllowed,deleteBranchOnMerge`
 
 ## 2. Brief
@@ -44,6 +44,7 @@ For each PR:
 
 1. **Gate**: `gh pr checks <n> --watch` (the previous merge may have restarted checks). Red: stop the plan.
 2. **Base**: a PR stacked on the one just merged must target that PR's base. If GitHub has not retargeted it within a minute, `gh pr edit <n> --base <that base>`.
+   - `mergeStateStatus` is `BEHIND` (the repo requires up-to-date branches): `gh pr update-branch <n>` (a merge commit, never a force-push), then return to sub-step 1 for this PR.
    - Squash or rebase merges only: rebase it onto the base first. In its checkout, `git fetch origin`, then `git rebase --onto origin/<base> <old head sha of the merged PR>`, re-run the gate locally, and `git push --force-with-lease`. Ask the user before this push, every time.
 3. **Conflict**: `mergeable` is `CONFLICTING` (re-query while `UNKNOWN`): stop the plan and offer to resolve it: on the PR's branch, `git fetch origin` and `git merge origin/<base>`, resolve each conflict keeping both sides' intent (ask the user where intent is unclear), run the repo's test command, commit, and push. Once pushed, return to sub-step 1 for this PR.
 4. **Merge**: `gh pr merge <n> <method>`. Branch protection decides what is allowed: a refused merge stops the plan, and is reported as it is.

@@ -27,8 +27,10 @@ It checks prerequisites, clones the repo, installs the skills and the always-on 
 
 ```powershell
 git clone https://github.com/musickevan1/heroloop $HOME\heroloop
-& $HOME\heroloop\install.ps1
+powershell -ExecutionPolicy Bypass -File $HOME\heroloop\install.ps1
 ```
+
+On a machine where Group Policy locks the execution policy, even that is refused: use the `-Copy` route (`install.ps1 -Copy <dir>`) or ask IT.
 
 **macOS / Linux / WSL**:
 
@@ -149,12 +151,12 @@ The install scripts link every skill into `~/.agents/skills`. Skills load on dem
 
 | Tool | Reads skills from | Paste AGENTS.global.md into |
 |---|---|---|
-| GitHub Copilot (VS Code) | `~/.agents/skills` ✓ | Command Palette → *Chat: New Instructions File* → *User*, below front matter `applyTo: "**"` |
+| GitHub Copilot (VS Code) | `~/.agents/skills` ✓ | `~/.claude/CLAUDE.md`, then turn on the VS Code setting `chat.useClaudeMdFile` (not yet confirmed on a real VS Code) |
 | Cursor | `~/.agents/skills` ✓ | Settings → Rules → *User Rules* |
 | Codex | `~/.agents/skills` ✓ | `~/.codex/AGENTS.md` |
 | Claude Code | `~/.claude/skills`: run `install.ps1 ~\.claude\skills` or `install.sh ~/.claude/skills` | `~/.claude/CLAUDE.md` |
 
-Type `/` in agent chat to see the skills. Only add `~/.claude/skills` if you use Claude Code: Copilot and Cursor read that folder too and would show each skill twice.
+Type `/` in agent chat to see the skills. Cursor's sandbox protects `.git/config` and denies network by default, so it will ask to run `git` and `gh` outside the sandbox; Copilot asks before commands too. Approve them. Only add `~/.claude/skills` if you use Claude Code: Copilot and Cursor read that folder too and would show each skill twice.
 
 **Share with a team** by copying the skills into a repo instead: `install.ps1 -Copy .github\skills` or `install.sh --copy .github/skills`.
 
@@ -176,6 +178,8 @@ heroloop never overwrites a skill it didn't install, so nothing breaks, but you 
 git -C ~/heroloop pull
 ```
 
+PowerShell: `git -C $HOME\heroloop pull`
+
 Installs are links into this repo, so a pull is the whole update. Re-run the install script only when skills were added or removed (it also cleans up links to deleted ones), or if you installed with `-Copy` / `--copy`.
 
 ## Uninstall
@@ -183,7 +187,7 @@ Installs are links into this repo, so a pull is the whole update. Re-run the ins
 1. Remove the skills. This deletes only what heroloop installed; links are removed without touching what they point to, and skills you installed yourself stay.
    - Windows: `& $HOME\heroloop\install.ps1 -Uninstall` (add any other folders you installed into, e.g. `$HOME\.claude\skills`)
    - macOS / Linux: `~/heroloop/install.sh --uninstall` (same: add other folders)
-2. Remove the always-on guidance: the `heroloop:start` … `heroloop:end` block in `~/.codex/AGENTS.md` or `~/.claude/CLAUDE.md`, the `heroloop.instructions.md` file in VS Code (*Chat: Open Customizations*), or the text you pasted into Cursor's *User Rules*.
+2. Remove the always-on guidance: the `heroloop:start` … `heroloop:end` block in `~/.codex/AGENTS.md` or `~/.claude/CLAUDE.md` (also what Copilot reads), or the text you pasted into Cursor's *User Rules*.
 3. Delete the clone: `~/heroloop`.
 
 ## Repo layout

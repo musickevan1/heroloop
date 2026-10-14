@@ -25,7 +25,7 @@ Done when all three commands succeed. On Windows, a freshly installed tool may n
 ## 3. Get heroloop
 
 - `~/heroloop` does not exist: `git clone https://github.com/musickevan1/heroloop ~/heroloop`.
-- It exists and is a clone of that repo (`git -C ~/heroloop remote get-url origin`): `git -C ~/heroloop pull --ff-only`.
+- It exists and is a clone of that repo (`git -C ~/heroloop remote get-url origin`; PowerShell: `git -C $HOME\heroloop remote get-url origin`): `git -C ~/heroloop pull --ff-only` (PowerShell: `git -C $HOME\heroloop pull --ff-only`).
 - It exists and is something else: ask the user where to clone instead, and use that path wherever this file says `~/heroloop`.
 
 Done when `~/heroloop/install.sh` and `~/heroloop/install.ps1` exist.
@@ -64,12 +64,7 @@ For each tool the user uses:
 
 - **Codex**: write the block into `~/.codex/AGENTS.md`.
 - **Claude Code**: write the block into `~/.claude/CLAUDE.md`.
-- **GitHub Copilot (VS Code)**: write `heroloop.instructions.md` in the VS Code profile's `prompts` folder, with front matter `applyTo: "**"` above the block:
-  - Windows: `$env:APPDATA\Code\User\prompts\`
-  - macOS: `~/Library/Application Support/Code/User/prompts/`
-  - Linux: `~/.config/Code/User/prompts/`
-
-  If the `Code/User` folder does not exist (VS Code Insiders, a portable install, or a named profile), ask the user to run *Chat: New Instructions File* → *User* from the Command Palette, and write the file at the path it creates. Afterwards ask them to confirm it is listed under *Chat: Open Customizations*.
+- **GitHub Copilot (VS Code)**: write the block into `~/.claude/CLAUDE.md` (the same file as Claude Code; reuse the block if it is there) and turn on the VS Code setting `chat.useClaudeMdFile`, which makes VS Code read that file for personal instructions in every chat. This route is documented but not yet confirmed on a real VS Code: ask the user to open a new agent chat and check that it follows the Ponytail guidance, and say so if it does not.
 - **Cursor**: User Rules live in Cursor's settings, not in a file. Copy `AGENTS.global.md` to the clipboard (Windows `Get-Content $HOME\heroloop\AGENTS.global.md -Raw | Set-Clipboard`, macOS `pbcopy < ~/heroloop/AGENTS.global.md`) and ask the user to paste it into Settings → Rules → *User Rules*. Wait for them to confirm.
 
 Done when every tool the user named has the guidance, confirmed by reading the file back or by the user.
@@ -83,6 +78,6 @@ Tell the user:
 3. How to use it in a repo, in a new chat after the reload:
    - `/setup-matt-pocock-skills` once per repo, to choose where tickets live.
    - `/dev-loop <idea>` to plan and build; `/land-prs` to merge.
-4. How to update later: `git -C ~/heroloop pull`, re-running the installer only when skills were added or removed.
+4. How to update later: `git -C ~/heroloop pull` (PowerShell: `git -C $HOME\heroloop pull`), re-running the installer only when skills were added or removed.
 
 Done when the user has this summary.
